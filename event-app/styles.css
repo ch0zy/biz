@@ -365,7 +365,7 @@ body {
   position: absolute;
   left: 16px;
   width: 20px; height: 20px;
-  stroke: var(--brand-30);   /* icon-color-light */
+  stroke: #7C879F;           /* gray-cool-50 */
   fill: none; stroke-width: 1.5;
   stroke-linecap: round; stroke-linejoin: round;
   pointer-events: none;
@@ -687,15 +687,22 @@ body {
 
 .chat-input {
   flex: 1;
-  border: 1px solid var(--gc-20);
-  border-radius: 20px;
-  padding: 8px 14px;
-  font-size: 12px; font-family: var(--font);
-  outline: none; color: var(--gc-80);
+  height: 44px;                      /* matches ZDS button height */
+  border: 1px solid var(--gc-50);    /* border-color-dark, matches text field */
+  border-radius: var(--radius-md);   /* 8px, consistent with button */
+  padding: 0 14px;
+  font-size: 14px;                   /* matches btn label/md-semibold size */
+  font-weight: 300;                  /* light weight for placeholder */
+  font-family: var(--font);
+  color: var(--gc-60);               /* placeholder colour */
+  outline: none;
   transition: border-color 120ms ease;
 }
 
-.chat-input:focus { border-color: var(--brand-60); }
+.chat-input:focus {
+  border: 2px solid var(--brand-60); /* focus ring matches ZDS field */
+  padding: 0 13px;                   /* compensate for extra border px */
+}
 
 /* ─── Document Rows ──────────────────────────────────────────────── */
 .doc-row {
