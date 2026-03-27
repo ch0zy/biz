@@ -118,37 +118,49 @@ body {
     │    │         │            │
     │  [01 Login] [02 MFA]      │
 */
+/*
+  Auth fork: the shape in the preview is:
+    - One vertical from auth header centre down to a horizontal bar
+    - The horizontal bar spans left-card-centre to right-card-centre
+    - Two short verticals + arrowheads drop from the bar into each card
+
+  .auth-cards are two equal flex children with a 10px gap inside a 470px container.
+  Each child is (470 - 10) / 2 = 230px wide.
+  Left card centre  = 230/2           = 115px = 115/470 ≈ 24.5%
+  Right card centre = 230 + 10 + 115  = 355px = 355/470 ≈ 75.5%
+*/
 .auth-fork {
   position: relative;
-  height: 24px;    /* space between section header bottom and card tops */
+  height: 28px;
 }
-/* Horizontal bar from left-card-centre to right-card-centre.
-   Each card is 50% of .auth-wrap (minus the gap).
-   Left card centre ≈ 25%, right card centre ≈ 75%. */
+/* Vertical from auth header centre (50%) down to horizontal bar at bottom */
 .auth-fork::before {
   content: '';
   position: absolute;
-  top: 0;
-  left:  calc(25% - 0.75px);
-  right: calc(25% - 0.75px);
-  border-top: 1.5px solid var(--conn);
+  top: 0; bottom: 0;
+  left: calc(50% - 0.75px);
+  border-left: 1.5px solid var(--conn);
 }
-/* Two vertical drops: left edge at 25%, right edge at 75% */
+/* Horizontal bar at the bottom, spanning both card centres */
 .auth-fork::after {
   content: '';
   position: absolute;
-  top: 0;
-  left:  calc(25% - 0.75px);
-  width: calc(50% + 1.5px);
-  height: 100%;
-  border-left:  1.5px solid var(--conn);
-  border-right: 1.5px solid var(--conn);
+  bottom: 0;
+  left:  calc(24.5% - 0.75px);
+  right: calc(24.5% - 0.75px);
+  border-top: 1.5px solid var(--conn);
 }
 
-.auth-cards       { display: flex; gap: 10px; }
-.auth-card        { flex: 1; }
-/* Small gap + arrowhead above each card */
-.auth-card-arrow  { height: 6px; display: flex; justify-content: center; align-items: flex-end; }
+.auth-cards { display: flex; gap: 10px; }
+.auth-card  { flex: 1; }
+
+/* Short vertical drop from horizontal bar + arrowhead into each card */
+.auth-card-arrow {
+  display: flex; flex-direction: column; align-items: center;
+  height: 14px;
+}
+.auth-card-arrow .vert-line  { flex: 1; height: auto; }
+.auth-card-arrow .arrow-down { flex-shrink: 0; }
 
 /* ── Bridge: auth → 5-col fork ───────────────────────────────── */
 /*
@@ -259,7 +271,7 @@ body {
     <div class="auth-fork"></div>
     <div class="auth-cards">
       <div class="auth-card">
-        <div class="auth-card-arrow"><div class="arrow-down"></div></div>
+        <div class="auth-card-arrow"><div class="vert-line"></div><div class="arrow-down"></div></div>
         <div class="screen-card">
           <span class="screen-num">01</span>
           <span class="screen-name">Login</span>
@@ -269,7 +281,7 @@ body {
         </div>
       </div>
       <div class="auth-card">
-        <div class="auth-card-arrow"><div class="arrow-down"></div></div>
+        <div class="auth-card-arrow"><div class="vert-line"></div><div class="arrow-down"></div></div>
         <div class="screen-card">
           <span class="screen-num">02</span>
           <span class="screen-name">MFA Verification</span>
