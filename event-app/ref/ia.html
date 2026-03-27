@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ASEAN Summit 2027 — MVP Information Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Lexend', system-ui, sans-serif;
+  background: #f0f2f5;
+  padding: 48px 40px 72px;
+  min-width: 1180px;
+}
+
+:root {
+  --entry-bg:    #013D43;
+  --section-bg:  #03727D;
+  --screen-bg:   #E9F4F5;
+  --screen-bord: #CEE6E8;
+  --chip-bg:     #ffffff;
+  --chip-bord:   #DEE1E7;
+  --chip-text:   #5C677E;
+  --num-color:   #02545D;
+  --name-color:  #013D43;
+  --conn:        #b8c4d4;
+  --muted:       #7C879F;
+}
+
+/* ── Title & Legend ──────────────────────────────────────────── */
+.page-title {
+  font-size: 17px; font-weight: 600;
+  color: var(--section-bg); margin-bottom: 14px;
+}
+.legend {
+  display: flex; gap: 22px; flex-wrap: wrap;
+  align-items: center; margin-bottom: 36px;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+.legend-dot  { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+.dot-entry   { background: var(--entry-bg); }
+.dot-section { background: var(--section-bg); }
+.dot-screen  { background: var(--screen-bg); border: 1px solid var(--screen-bord); }
+.dot-chip    { background: var(--chip-bg);   border: 1px solid var(--chip-bord); }
+
+/* ── Node shapes ─────────────────────────────────────────────── */
+.node-entry {
+  display: inline-block;
+  background: var(--entry-bg); color: #fff;
+  border-radius: 8px; padding: 11px 28px;
+  font-size: 14px; font-weight: 600; line-height: 1;
+}
+
+.node-section {
+  background: var(--section-bg); color: #fff;
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 12px; font-weight: 600;
+  text-align: center; width: 100%; line-height: 1.2;
+}
+
+.screen-card {
+  background: var(--screen-bg);
+  border: 1px solid var(--screen-bord);
+  border-radius: 8px; padding: 10px;
+  width: 100%;
+}
+
+.screen-num  { font-size: 9px;  font-weight: 600; color: var(--num-color);  display: block; margin-bottom: 2px; }
+.screen-name { font-size: 11px; font-weight: 600; color: var(--name-color); display: block; margin-bottom: 7px; line-height: 1.3; }
+
+.chip {
+  display: block;
+  background: var(--chip-bg); border: 0.5px solid var(--chip-bord);
+  border-radius: 4px; padding: 3px 7px 4px;
+  font-size: 9.5px; color: var(--chip-text); line-height: 1.4;
+  margin-bottom: 3px;
+}
+.chip:last-child { margin-bottom: 0; }
+
+/* ── Connector primitives ─────────────────────────────────────── */
+/* A vertical line segment: set --h to control height */
+.vert-line {
+  width: 0;
+  height: var(--h, 20px);
+  border-left: 1.5px solid var(--conn);
+  margin: 0 auto;
+}
+/* Downward arrowhead */
+.arrow-down {
+  width: 0; height: 0;
+  border-left:  4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top:   6px solid var(--conn);
+  margin: 0 auto;
+}
+/* Stack: vertical line then arrow */
+.connector {
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* ── Entry tier ───────────────────────────────────────────────── */
+.tier-entry { text-align: center; }
+
+/* ── Auth tier ────────────────────────────────────────────────── */
+.auth-outer { display: flex; justify-content: center; }
+.auth-wrap  { width: 470px; flex-shrink: 0; }
+
+/*
+  The fork from the auth section header to the two cards is drawn
+  entirely within .auth-wrap using a relative container:
+
+    ┌──── auth-wrap (470px) ────┐
+    │   [  Authentication   ]   │
+    │         │                 │   ← .auth-fork handles this region
+    │    ┌────┴────┐            │
+    │    │         │            │
+    │  [01 Login] [02 MFA]      │
+*/
+.auth-fork {
+  position: relative;
+  height: 24px;    /* space between section header bottom and card tops */
+}
+/* Horizontal bar from left-card-centre to right-card-centre.
+   Each card is 50% of .auth-wrap (minus the gap).
+   Left card centre ≈ 25%, right card centre ≈ 75%. */
+.auth-fork::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left:  calc(25% - 0.75px);
+  right: calc(25% - 0.75px);
+  border-top: 1.5px solid var(--conn);
+}
+/* Two vertical drops: left edge at 25%, right edge at 75% */
+.auth-fork::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left:  calc(25% - 0.75px);
+  width: calc(50% + 1.5px);
+  height: 100%;
+  border-left:  1.5px solid var(--conn);
+  border-right: 1.5px solid var(--conn);
+}
+
+.auth-cards       { display: flex; gap: 10px; }
+.auth-card        { flex: 1; }
+/* Small gap + arrowhead above each card */
+.auth-card-arrow  { height: 6px; display: flex; justify-content: center; align-items: flex-end; }
+
+/* ── Bridge: auth → 5-col fork ───────────────────────────────── */
+/*
+  After the auth block we need:
+  1. A vertical line from auth centre down to the horizontal fork bar.
+  2. A horizontal bar spanning col-0-centre → col-4-centre.
+  3. Five vertical drops from the bar into each section header.
+
+  The bridge container is full-width (same as .cols-wrap).
+  Column centres are at: 10%, 30%, 50%, 70%, 90% of the grid width
+  (because each col is 1/5 of total, centred at 1/10, 3/10, 5/10, 7/10, 9/10).
+
+  We draw this as a single .bridge div.
+*/
+.bridge {
+  position: relative;
+  height: 36px;   /* space between auth cards bottom and cols section headers */
+}
+/* Vertical from auth centre (= 50%) down to horizontal bar at bottom */
+.bridge::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: calc(50% - 0.75px);
+  border-left: 1.5px solid var(--conn);
+}
+/* Horizontal bar at the bottom of the bridge */
+.bridge::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left:  calc(100% / 10);   /* col-0 centre */
+  right: calc(100% / 10);   /* col-4 centre */
+  border-top: 1.5px solid var(--conn);
+}
+
+/* ── 5-column main section ────────────────────────────────────── */
+.cols-wrap {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.col { display: flex; flex-direction: column; }
+
+/* Tick from bridge h-bar down into each section header */
+.col-tick {
+  display: flex; flex-direction: column; align-items: center;
+  height: 20px;          /* matches bridge height remainder */
+}
+.col-tick .vert-line  { flex: 1; height: auto; }
+.col-tick .arrow-down { flex-shrink: 0; }
+
+/* Connector between stacked screens */
+.screen-conn {
+  display: flex; flex-direction: column; align-items: center;
+  height: 14px;
+}
+.screen-conn .vert-line  { flex: 1; height: auto; }
+.screen-conn .arrow-down { flex-shrink: 0; }
+
+/* ── Utility section ──────────────────────────────────────────── */
+.util-divider {
+  margin: 36px 0 10px;
+  border-top: 1.5px dashed var(--conn);
+  padding-top: 14px;
+  text-align: center;
+  font-size: 10px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
+}
+.util-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+</style>
+</head>
+<body>
+
+<p class="page-title">ASEAN Summit 2027 — MVP Information Architecture</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot dot-entry"></div>Entry point</div>
+  <div class="legend-item"><div class="legend-dot dot-section"></div>Section</div>
+  <div class="legend-item"><div class="legend-dot dot-screen"></div>Screen</div>
+  <div class="legend-item"><div class="legend-dot dot-chip"></div>Content / action</div>
+</div>
+
+<!-- ── Entry ── -->
+<div class="tier-entry">
+  <div class="node-entry">ASEAN Summit 2027 App</div>
+</div>
+
+<!-- Vertical entry → auth -->
+<div class="auth-outer">
+  <div class="auth-wrap">
+    <div class="connector" style="height:20px">
+      <div class="vert-line" style="--h:14px"></div>
+      <div class="arrow-down"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Authentication ── -->
+<div class="auth-outer">
+  <div class="auth-wrap">
+    <div class="node-section">Authentication</div>
+    <div class="auth-fork"></div>
+    <div class="auth-cards">
+      <div class="auth-card">
+        <div class="auth-card-arrow"><div class="arrow-down"></div></div>
+        <div class="screen-card">
+          <span class="screen-num">01</span>
+          <span class="screen-name">Login</span>
+          <span class="chip">Language selector</span>
+          <span class="chip">Delegate ID + password</span>
+          <span class="chip">Remember device</span>
+        </div>
+      </div>
+      <div class="auth-card">
+        <div class="auth-card-arrow"><div class="arrow-down"></div></div>
+        <div class="screen-card">
+          <span class="screen-num">02</span>
+          <span class="screen-name">MFA Verification</span>
+          <span class="chip">6-digit OTP entry</span>
+          <span class="chip">Resend / alternate method</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bridge: auth → 5-col fork ── -->
+<div class="bridge"></div>
+
+<!-- ── 5 Main sections ── -->
+<div class="cols-wrap">
+
+  <!-- HOME -->
+  <div class="col">
+    <div class="col-tick"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="node-section">Home</div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">03</span>
+      <span class="screen-name">Home Dashboard</span>
+      <span class="chip">Next up session</span>
+      <span class="chip">Today at a glance</span>
+      <span class="chip">Alert banner</span>
+      <span class="chip">Quick actions</span>
+      <span class="chip">Suggested connections</span>
+      <span class="chip">Recent messages</span>
+    </div>
+  </div>
+
+  <!-- AGENDA -->
+  <div class="col">
+    <div class="col-tick"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="node-section">Agenda</div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">04</span>
+      <span class="screen-name">My Agenda</span>
+      <span class="chip">Today / Tomorrow tabs</span>
+      <span class="chip">My Sessions tab</span>
+      <span class="chip">Session search</span>
+      <span class="chip">Track / format filters</span>
+      <span class="chip">Conflict detection</span>
+    </div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">05</span>
+      <span class="screen-name">Full Programme</span>
+      <span class="chip">All sessions browse</span>
+      <span class="chip">Day / format filters</span>
+    </div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">06</span>
+      <span class="screen-name">Session Detail</span>
+      <span class="chip">Check in / Join virtually</span>
+      <span class="chip">Speakers</span>
+      <span class="chip">Related documents</span>
+      <span class="chip">Discussion thread</span>
+    </div>
+  </div>
+
+  <!-- NETWORK -->
+  <div class="col">
+    <div class="col-tick"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="node-section">Network</div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">07</span>
+      <span class="screen-name">Network Hub</span>
+      <span class="chip">Suggested connections</span>
+      <span class="chip">My Connections tab</span>
+      <span class="chip">Business Cards tab</span>
+      <span class="chip">Delegate search</span>
+      <span class="chip">Scan QR to connect</span>
+    </div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">08</span>
+      <span class="screen-name">Delegate Profile</span>
+      <span class="chip">About + interests</span>
+      <span class="chip">Exchange business card</span>
+      <span class="chip">Send message</span>
+      <span class="chip">Request meeting</span>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="col">
+    <div class="col-tick"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="node-section">Messages</div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">09</span>
+      <span class="screen-name">Messages List</span>
+      <span class="chip">All messages tab</span>
+      <span class="chip">Groups tab</span>
+      <span class="chip">Announcements tab</span>
+      <span class="chip">Conversation search</span>
+    </div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">10</span>
+      <span class="screen-name">Message Thread</span>
+      <span class="chip">1:1 and group chat</span>
+      <span class="chip">Translate toggle</span>
+      <span class="chip">Message compose</span>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="col">
+    <div class="col-tick"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="node-section">Profile</div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">14</span>
+      <span class="screen-name">Profile</span>
+      <span class="chip">Activity stats</span>
+      <span class="chip">Digital business card</span>
+      <span class="chip">Language settings</span>
+      <span class="chip">Notification prefs</span>
+      <span class="chip">Downloaded docs</span>
+    </div>
+    <div class="screen-conn"><div class="vert-line"></div><div class="arrow-down"></div></div>
+    <div class="screen-card">
+      <span class="screen-num">15</span>
+      <span class="screen-name">Help &amp; Emergency</span>
+      <span class="chip">Emergency contacts</span>
+      <span class="chip">Venue information</span>
+      <span class="chip">FAQ</span>
+      <span class="chip">Technical support</span>
+    </div>
+  </div>
+
+</div><!-- /cols-wrap -->
+
+<!-- ── Utility screens ── -->
+<div class="util-divider">Utility screens — accessible from multiple sections</div>
+
+<div class="util-cards">
+  <div class="screen-card">
+    <span class="screen-num">11</span>
+    <span class="screen-name">Virtual Events</span>
+    <span class="chip">Live now stream</span>
+    <span class="chip">Upcoming virtual sessions</span>
+    <span class="chip">Recordings library</span>
+    <span class="chip">Technical support</span>
+  </div>
+  <div class="screen-card">
+    <span class="screen-num">12</span>
+    <span class="screen-name">Badge / QR</span>
+    <span class="chip">Personal QR code</span>
+    <span class="chip">Delegate identity</span>
+    <span class="chip">Add to wallet</span>
+    <span class="chip">Share business card</span>
+  </div>
+  <div class="screen-card">
+    <span class="screen-num">13</span>
+    <span class="screen-name">Documents</span>
+    <span class="chip">Featured documents</span>
+    <span class="chip">Session-linked docs</span>
+    <span class="chip">Downloaded / offline</span>
+    <span class="chip">Secure access indicators</span>
+  </div>
+</div>
+
+</body>
+</html>
